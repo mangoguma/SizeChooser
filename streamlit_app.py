@@ -1,43 +1,45 @@
 import streamlit as st
-from ux_writer import UXwriter
+from user import User
+from ux_writer import TopSizeChooser, LowerSizeChooser
 import pandas as pd
-import json
-from st_copy_to_clipboard import st_copy_to_clipboard
-
-
-def boolean_to_emoji(value):
-    return '✅' if value else '❌'
-
-
-st.title("✍🏻 UX writer")
-st.write(
-    "SqueezeBits의 UX writer입니다."
-)
 
 openai_api_key = st.text_input("OpenAI API Key", type="password")
+st.title("👕 Size chooser")
+st.write(
+    "옷 사이즈를 골라드려요!"
+)
+
+age = st.number_input("나이를 입력하세요", min_value=0, value=40)
+body_shape = st.selectbox("자신과 가까운 체형을 선택하세요", options=["슬림", "평균", "듬직", "근육질"])
+user_height = st.number_input("키를 입력하세요 (cm)", min_value=0, value=170)
+user_weight = st.number_input("몸무게를 입력하세요 (kg)", min_value=0, value=70)
+upper_size = st.select_slider("평소 입는 상의 사이즈를 선택하세요", options=["85", "90", "95", "100", "105", "110", "115"])
+lower_size = st.select_slider("평소 입는 하의 사이즈를 선택하세요", options=["25", "26", "27", "28", "29", "30", "31", "32", "33", "34", "35", "36"])
+gender = st.radio("성별을 선택하세요", options=["남", "여"])
+
+user = User(age=age, height=user_height, weight=user_weight, gender=gender, upper_size=upper_size, lower_size=lower_size, body_shape=body_shape)
+
+
 col1, col2 = st.columns(2, vertical_alignment="bottom")
 with col1:
-    option = st.selectbox(
-        "UX 라이팅 매뉴얼을 선택하세요",
-        ["select", "Toss", "Squeezebits"],
+    category = st.selectbox(
+        "카테고리를 선택하세요",
+        ["상의", "하의", "아우터"],
         index=0
     )
 with col2:
-    is_English = st.toggle("Always answer in English")
+    product_url = st.text_input("상품 링크를 입력하세요", "")
 
 if not openai_api_key:
     st.info("Please add your OpenAI API key to continue.", icon="🗝️")
 
-elif option == "select":
-    st.info("Please select your manual to continue.", icon="🧾")
-
 else:
-    if option == "Toss":
-        from toss import TOSS
-        writer = UXwriter(openai_api_key, TOSS, is_English)
+    if category == "상의":
+        chooser = TopSizeChooser(openai_api_key)
+    elif category == "하의":
+        chooser = LowerSizeChooser(openai_api_key)
     else:
-        from sqzb import SQZB
-        writer = UXwriter(openai_api_key, SQZB, is_English)
+        st.error("준비 중인 기능입니다.")
 
     # Text input
     txt_input = st.text_area('Enter your text', '', height=200)
@@ -46,23 +48,11 @@ else:
 
     if submitted and openai_api_key.startswith('sk-'):
         score1, score2 = st.columns(2)
-        with st.spinner('Calculating...'):
-            score = writer.get_score(txt_input)
-            
-            score_data = json.loads(score)
-            core_values = score_data["Core_Values"]
-            emoji_values = {k: boolean_to_emoji(v) for k, v in core_values.items()}
+        with st.spinner('Get size information...'):
+            size_info = chooser.get_size_info(product_url)
+            df = pd.DataFrame([size_info])
+            st.table(df)
 
-            df = pd.DataFrame([emoji_values])
-            df.index = ['']
-
-            split_index = (len(df.columns)+1) // 2
-            with score1:
-                st.table(df.iloc[:, :split_index].T)
-            with score2:
-                st.table(df.iloc[:,split_index:].T)
-
-        with st.spinner('Generating...'):
-            result = writer.edit(txt_input, score)
+        with st.spinner('Choose size...'):
+            result = chooser.choose_size(user, size_info)
             st.info(result)
-            st_copy_to_clipboard(result)
