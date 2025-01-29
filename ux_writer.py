@@ -16,7 +16,7 @@ class SizeChooser(ABC):
 
     def choose_size(self, user_info, size_info):
         response = self.client.chat.completions.create(
-            model="gpt-4o",
+            model="gpt-4",
             messages=[
                 {
                     "role": "system",
@@ -51,7 +51,7 @@ Size Information:
 class TopSizeChooser(SizeChooser):
     def get_size_info(self, url):
         response = self.client.chat.completions.create(
-            model="gpt-4o-mini",
+            model="gpt-3.5-turbo",
             messages=[
                 {
                     "role": "system",
@@ -107,7 +107,7 @@ class TopSizeChooser(SizeChooser):
 class LowerSizeChooser(SizeChooser):
     def get_size_info(self, url):
         response = self.client.chat.completions.create(
-            model="gpt-4o-mini",
+            model="gpt-3.5-turbo",
             messages=[
                 {
                     "role": "system",
