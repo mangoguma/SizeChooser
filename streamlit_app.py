@@ -41,9 +41,6 @@ else:
     else:
         st.error("준비 중인 기능입니다.")
 
-    # Text input
-    txt_input = st.text_area('Enter your text', '', height=200)
-
     submitted = st.button('Check')
 
     if submitted and openai_api_key.startswith('sk-'):

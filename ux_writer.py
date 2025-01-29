@@ -16,24 +16,19 @@ class SizeChooser(ABC):
 
     def choose_size(self, user_info, size_info):
         response = self.client.chat.completions.create(
-            model="gpt-4",
+            model="gpt-4o-mini",
             messages=[
                 {
                     "role": "system",
-                    "content": """You are an expert fashion consultant who helps customers choose the perfect size.
+                    "content": """당신은 고객에게 가장 적합한 사이즈를 추천하는 패션 전문가입니다.
 
-Your task is to analyze the customer's information and size measurements to recommend the most suitable size.
+응답 형식:
+추천 사이즈: [사이즈]
+설명: [150자 이내의 추천 이유 설명]
 
-Process:
-1. Review the customer's information and provided size measurements
-2. If you need more information, clearly state what additional details would help
-3. When making a recommendation:
-   - State your recommended size clearly
-   - Explain your reasoning using measurements and customer information
-   - Point out any potential fit considerations
-   - If you're unsure between sizes, explain the trade-offs
-
-Be direct and thorough in your explanation. If you can't make a confident recommendation with the given information, don't hesitate to ask for clarification."""
+- 고객 정보와 사이즈 측정값을 분석하여 정확한 사이즈를 추천해주세요
+- 설명은 한국어로 작성하고, 150자를 넘지 않도록 해주세요
+"""
                 },
                 {
                     "role": "user",
@@ -51,7 +46,7 @@ Size Information:
 class TopSizeChooser(SizeChooser):
     def get_size_info(self, url):
         response = self.client.chat.completions.create(
-            model="gpt-3.5-turbo",
+            model="gpt-4o-mini",
             messages=[
                 {
                     "role": "system",
