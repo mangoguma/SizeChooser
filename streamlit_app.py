@@ -51,5 +51,5 @@ else:
             st.table(df)
 
         with st.spinner('Choose size...'):
-            result = chooser.choose_size(user, size_info)
+            result = chooser.choose_size(user, size_info, product_url)
             st.info(result)

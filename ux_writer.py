@@ -14,7 +14,7 @@ class SizeChooser(ABC):
         """Extract size information from the given URL."""
         pass
 
-    def choose_size(self, user_info, size_info):
+    def choose_size(self, user_info, size_info, product_url):
         response = self.client.chat.completions.create(
             model="gpt-4o-mini",
             messages=[
@@ -28,12 +28,16 @@ class SizeChooser(ABC):
 
 - 고객 정보와 사이즈 측정값을 분석하여 정확한 사이즈를 추천해주세요
 - 추천 사이즈에 대한 이유는 한국어로 작성하고, 최대한 자세히 적어주세요
+- 링크에서 상품의 특징과 사람들의 리뷰를 함께 참고해주세요
 """
                 },
                 {
                     "role": "user",
                     "content": f"""Customer Information:
 {user_info}
+
+Product URL:
+{product_url}
 
 Size Information:
 {json.dumps(size_info, ensure_ascii=False, indent=2)}"""
