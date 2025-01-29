@@ -54,30 +54,34 @@ class TopSizeChooser(SizeChooser):
             messages=[
                 {
                     "role": "system",
-                    "content": """You are an expert in extracting size information for tops (shirts, jackets, etc.) from fashion product URLs.
-                    Extract size measurements in a structured format. 
-                    - If a measurement is not available, use "-" as the value
-                    - Only include available sizes
-                    - All measurements should be in centimeters
-                    - Do not include any explanatory text, only return the JSON data"""
-                },
-                {
-                    "role": "user",
-                    "content": f"Extract size information from this URL: {url}. Return the data in this format:" + """
+                    "content": """당신은 상의(셔츠, 자켓 등) 상품 페이지에서 사이즈 정보를 추출하는 전문가입니다.
+                    주어진 URL에 접속하여 상품 페이지의 실제 사이즈표에서 정보를 추출해주세요.
+                    
+                    중요:
+                    - 예시 데이터가 아닌 실제 URL의 상품 사이즈표 데이터를 추출해야 합니다
+                    - 상품 페이지의 사이즈표를 찾아 정확한 측정값을 가져와주세요
+                    - 측정값이 없는 경우 "-"를 사용하세요
+                    - 제공된 사이즈만 포함하세요
+                    - 모든 측정값은 센티미터(cm) 단위입니다
+                    
+                    다음 JSON 형식으로 응답해주세요:
                     {
                         "sizes": [
                             {
-                                "size": "M",
+                                "size": "실제사이즈",
                                 "measurements": {
-                                    "총장": "68",
-                                    "가슴단면": "58",
-                                    "어깨너비": "54",
-                                    "소매길이": "61"
+                                    "총장": "실제측정값",
+                                    "가슴단면": "실제측정값",
+                                    "어깨너비": "실제측정값",
+                                    "소매길이": "실제측정값"
                                 }
                             }
                         ]
-                    }
-                    Note: Use "-" for any missing measurements."""
+                    }"""
+                },
+                {
+                    "role": "user",
+                    "content": f"이 URL에서 실제 상품의 사이즈표 정보를 추출해주세요: {url}"
                 }
             ],
             response_format={"type": "json_object"}
@@ -106,36 +110,40 @@ class TopSizeChooser(SizeChooser):
 class LowerSizeChooser(SizeChooser):
     def get_size_info(self, url):
         response = self.client.chat.completions.create(
-            model="gpt-3.5-turbo",
+            model="gpt-4o-mini",
             messages=[
                 {
                     "role": "system",
-                    "content": """You are an expert in extracting size information for bottoms (pants, skirts, etc.) from fashion product URLs.
-                    Extract size measurements in a structured format. 
-                    - If a measurement is not available, use "-" as the value
-                    - Only include available sizes
-                    - All measurements should be in centimeters
-                    - Do not include any explanatory text, only return the JSON data"""
-                },
-                {
-                    "role": "user",
-                    "content": f"Extract size information from this URL: {url}. Return the data in this format:" + """
+                    "content": """당신은 하의(바지, 스커트 등) 상품 페이지에서 사이즈 정보를 추출하는 전문가입니다.
+                    주어진 URL에 접속하여 상품 페이지의 실제 사이즈표에서 정보를 추출해주세요.
+                    
+                    중요:
+                    - 예시 데이터가 아닌 실제 URL의 상품 사이즈표 데이터를 추출해야 합니다
+                    - 상품 페이지의 사이즈표를 찾아 정확한 측정값을 가져와주세요
+                    - 측정값이 없는 경우 "-"를 사용하세요
+                    - 제공된 사이즈만 포함하세요
+                    - 모든 측정값은 센티미터(cm) 단위입니다
+                    
+                    다음 JSON 형식으로 응답해주세요:
                     {
                         "sizes": [
                             {
-                                "size": "M",
+                                "size": "실제사이즈",
                                 "measurements": {
-                                    "총장": "98",
-                                    "허리단면": "36",
-                                    "엉덩이단면": "52",
-                                    "허벅지단면": "31",
-                                    "밑위": "28",
-                                    "밑단단면": "17"
+                                    "총장": "실제측정값",
+                                    "허리단면": "실제측정값",
+                                    "엉덩이단면": "실제측정값",
+                                    "허벅지단면": "실제측정값",
+                                    "밑위": "실제측정값",
+                                    "밑단단면": "실제측정값"
                                 }
                             }
                         ]
-                    }
-                    Note: Use "-" for any missing measurements."""
+                    }"""
+                },
+                {
+                    "role": "user",
+                    "content": f"이 URL에서 실제 상품의 사이즈표 정보를 추출해주세요: {url}"
                 }
             ],
             response_format={"type": "json_object"}
